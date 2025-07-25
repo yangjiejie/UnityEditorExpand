@@ -15,3 +15,6 @@ unity编辑器拓展
 
 如何生成dll到各个工程 ：
 <img width="1570" height="527" alt="image" src="https://github.com/user-attachments/assets/434036db-41d4-4620-a14a-ae8354ec9fb3" />
+
+csdn链接：
+https://blog.csdn.net/yangjie6898862/article/details/147554292?spm=1001.2014.3001.5502
