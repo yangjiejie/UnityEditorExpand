@@ -1,0 +1,14 @@
+D:\code_move1\Assets\Plugins\Editor\Debug\netstandard2.0\UnityEditorExpand.deps.json
+D:\code_move1\Assets\Plugins\Editor\Debug\netstandard2.0\UnityEditorExpand.dll
+D:\code_move1\Assets\Plugins\Editor\Debug\netstandard2.0\UnityEditorExpand.pdb
+D:\work\study\dll\UnityEditorExpand\UnityEditorExpand\bin\Debug\netstandard2.0\UnityEditorExpand.deps.json
+D:\work\study\dll\UnityEditorExpand\UnityEditorExpand\bin\Debug\netstandard2.0\UnityEditorExpand.dll
+D:\work\study\dll\UnityEditorExpand\UnityEditorExpand\bin\Debug\netstandard2.0\UnityEditorExpand.pdb
+D:\work\study\dll\UnityEditorExpand\UnityEditorExpand\obj\Debug\netstandard2.0\UnityEditorExpand.csproj.AssemblyReference.cache
+D:\work\study\dll\UnityEditorExpand\UnityEditorExpand\obj\Debug\netstandard2.0\UnityEditorExpand.GeneratedMSBuildEditorConfig.editorconfig
+D:\work\study\dll\UnityEditorExpand\UnityEditorExpand\obj\Debug\netstandard2.0\UnityEditorExpand.AssemblyInfoInputs.cache
+D:\work\study\dll\UnityEditorExpand\UnityEditorExpand\obj\Debug\netstandard2.0\UnityEditorExpand.AssemblyInfo.cs
+D:\work\study\dll\UnityEditorExpand\UnityEditorExpand\obj\Debug\netstandard2.0\UnityEditorExpand.csproj.CoreCompileInputs.cache
+D:\work\study\dll\UnityEditorExpand\UnityEditorExpand\obj\Debug\netstandard2.0\UnityEdi.829D0B21.Up2Date
+D:\work\study\dll\UnityEditorExpand\UnityEditorExpand\obj\Debug\netstandard2.0\UnityEditorExpand.dll
+D:\work\study\dll\UnityEditorExpand\UnityEditorExpand\obj\Debug\netstandard2.0\UnityEditorExpand.pdb
