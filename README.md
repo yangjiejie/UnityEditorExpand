@@ -10,3 +10,8 @@ unity编辑器拓展
 一处编译各处运行 ，利用vs的生成事件将dll拷贝到各个工程。
 
 使用方式： 编译生成dll 然后利用xCopy指令拷贝dll到各个工程的Plusin/Editor目录下，注意该dll只能是编辑器模式下使用，不参与打包
+放置dll的目录：
+<img width="575" height="400" alt="image" src="https://github.com/user-attachments/assets/d2ef3a54-7265-42b9-84e3-875180a6df6b" />
+
+如何生成dll到各个工程 ：
+<img width="1570" height="527" alt="image" src="https://github.com/user-attachments/assets/434036db-41d4-4620-a14a-ae8354ec9fb3" />
