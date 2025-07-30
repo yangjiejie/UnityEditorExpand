@@ -119,7 +119,19 @@ public static class EasyUseEditorFuns
         }
         File.WriteAllText(resPath, contents);
     }
+    /// <summary>
+    /// 获取目录的父级目录
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static string ToParentPath(this string path)
+    {
+        if (string.IsNullOrEmpty(path))
+            return null;
 
+        var parent = Directory.GetParent(path);
+        return parent?.FullName;
+    }
 
     public static string ToFullPath(this string path)
     {

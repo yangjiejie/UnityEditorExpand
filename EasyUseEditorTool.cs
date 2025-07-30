@@ -518,12 +518,7 @@ public static class EasyUseEditorTool  // 简称euetool
     {
         
 
-        var map = new Dictionary<string, string>()
-        {
-            {"f1b3b4b945939a54ea0b23d3396115fb" ,"7a17f8463e4e2ec4bb426b40d71ecc8b" }, // SkeletonData.asset
-            {"a6b194f808b1af6499c93410e504af42" ,"6d2f39da8e9035a48b0ce403ef938f18" }, // SpineAtlasAsset
-
-        };
+        
         EditorApplication.ExecuteMenuItem("Assets/Copy Path");
 
         var buffer = EditorGUIUtility.systemCopyBuffer;
@@ -531,6 +526,12 @@ public static class EasyUseEditorTool  // 简称euetool
 
         var full = Directory.GetParent(buffer).FullName.ToFullPath();
 
+        var map = new Dictionary<string, string>()
+        {
+            {"f1b3b4b945939a54ea0b23d3396115fb" ,"7a17f8463e4e2ec4bb426b40d71ecc8b" }, // SkeletonData.asset
+            {"a6b194f808b1af6499c93410e504af42" ,"6d2f39da8e9035a48b0ce403ef938f18" }, // SpineAtlasAsset
+
+        };
         var allfiles = Directory.GetFiles(full,"*.*",SearchOption.TopDirectoryOnly).Where((xx)=>!xx.EndsWith(".meta"))
             .Select((xx)=>xx.ToFullPath());
 

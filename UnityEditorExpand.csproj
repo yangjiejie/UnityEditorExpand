@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <BaseOutputPath>bin</BaseOutputPath>
   </PropertyGroup>
 
@@ -14,6 +14,24 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Assembly-CSharp-Editor">
+      <HintPath>bin\Debug\netstandard2.0\Assembly-CSharp-Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="hot_fix">
+      <HintPath>bin\Debug\netstandard2.0\hot_fix.dll</HintPath>
+    </Reference>
+    <Reference Include="Launcher">
+      <HintPath>bin\Debug\netstandard2.0\Launcher.dll</HintPath>
+    </Reference>
+    <Reference Include="LoopScrollRect.Runtime">
+      <HintPath>bin\Debug\netstandard2.0\LoopScrollRect.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>bin\Debug\netstandard2.1\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="RTLTMPro">
+      <HintPath>bin\Debug\netstandard2.0\RTLTMPro.dll</HintPath>
+    </Reference>
     <Reference Include="spine-csharp">
       <HintPath>bin\Debug\netstandard2.0\spine-csharp.dll</HintPath>
     </Reference>
@@ -47,7 +65,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(TargetDir)$(TargetName).dll&quot; &quot;D:\code_move1\Assets\Plugins\Editor\&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetName).pdb&quot; &quot;D:\code_move1\Assets\Plugins\Editor\&quot; /Y &#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetName).dll&quot; &quot;D:\balootPro_verisonNa\Assets\Plugins\Editor\&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetName).pdb&quot; &quot;D:\balootPro_verisonNa\Assets\Plugins\Editor\&quot; /Y &#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetName).dll&quot; &quot;D:\ProNa\Assets\Plugins\Editor\&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetName).pdb&quot; &quot;D:\ProNa\Assets\Plugins\Editor\&quot; /Y " />
+    <Exec Command="&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetName).dll&quot; &quot;D:\balootPro_verisonNa\Assets\Plugins\Editor\&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetName).pdb&quot; &quot;D:\balootPro_verisonNa\Assets\Plugins\Editor\&quot; /Y &#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetName).dll&quot; &quot;D:\ProNa\Assets\Plugins\Editor\&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetName).pdb&quot; &quot;D:\ProNa\Assets\Plugins\Editor\&quot; /Y " />
   </Target>
   
 

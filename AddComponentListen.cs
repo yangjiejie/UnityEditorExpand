@@ -1,6 +1,9 @@
 ﻿#if UNITY_2021_OR_NEWER
+using HotFix.UtilTool;
+using Spine.Unity;
 using TMPro;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
@@ -12,7 +15,7 @@ public static class AddComponentListen
     static AddComponentListen()
     {
         // 确保只在编辑器状态注册
-        if (!Application.isPlaying)
+        if (!Application.isPlaying || PrefabStageUtility.GetCurrentPrefabStage() != null)
         {
             ObjectFactory.componentWasAdded -= OnComponentAdded;
             ObjectFactory.componentWasAdded += OnComponentAdded;
@@ -24,7 +27,7 @@ public static class AddComponentListen
         // 保险起见，判断当前是否处于编辑器且非播放模式
         if (Application.isPlaying)
             return;
-
+        
         // 仅处理编辑器手动添加的 Image
         switch (component)
         {
@@ -43,6 +46,7 @@ public static class AddComponentListen
                 text.raycastTarget = false;
                 text.enableWordWrapping = true;
                 text.overflowMode = TextOverflowModes.Overflow;
+                text.font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Art/global/Fonts/SFArabic SDF.asset");
                 EditorUtility.SetDirty(text);
                 break;
             case Text text:
@@ -52,11 +56,24 @@ public static class AddComponentListen
                 text.raycastTarget = false;
                 EditorUtility.SetDirty(text);
                 break;
+            
+            case Empty4Raycast CusImage:
+                var btn = component.GetComponent<Button>();
+                if(btn != null && btn.targetGraphic == null)
+                {
+                    btn.targetGraphic = CusImage;
+                }
+                break;
 
-                
+            case Image image:
+                btn = component.GetComponent<Button>();
+                if (btn != null && btn.targetGraphic == null)
+                {
+                    btn.targetGraphic = image;
+                }
+                break;
+           
         }
-
-        
     }
 }
 #endif

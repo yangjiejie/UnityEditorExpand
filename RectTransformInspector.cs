@@ -12,6 +12,7 @@ public class RectTransformInspector : Editor
     private Type originalEditorType;
     private float scaleRatio = 1f;
     private bool showScaler = false;
+    private bool showDetail = false;
     private static readonly string kInitialSizeKey = "RectScaler_InitialSize_";
 
     private void OnEnable()
@@ -65,7 +66,20 @@ public class RectTransformInspector : Editor
             {
                 ResetInitialSizeCache();
             }
+            showDetail = EditorGUILayout.Foldout(showDetail, "详细面板");
+            if(showDetail)
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.Vector2Field("ui坐标", (target as RectTransform).anchoredPosition);
+                if(GUILayout.Button("copy"))
+                {
+                    EditorGUIUtility.systemCopyBuffer = (target as RectTransform).anchoredPosition.ToString();
+                }
+                EditorGUILayout.EndHorizontal();
+            }
         }
+        
+
     }
 
     void ApplyScaleToSelection(float scale)
