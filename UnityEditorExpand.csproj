@@ -17,9 +17,6 @@
     <Reference Include="Assembly-CSharp-Editor">
       <HintPath>bin\Debug\netstandard2.0\Assembly-CSharp-Editor.dll</HintPath>
     </Reference>
-    <Reference Include="hot_fix">
-      <HintPath>bin\Debug\netstandard2.0\hot_fix.dll</HintPath>
-    </Reference>
     <Reference Include="Launcher">
       <HintPath>bin\Debug\netstandard2.0\Launcher.dll</HintPath>
     </Reference>
@@ -65,7 +62,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetName).dll&quot; &quot;D:\balootPro_verisonNa\Assets\Plugins\Editor\&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetName).pdb&quot; &quot;D:\balootPro_verisonNa\Assets\Plugins\Editor\&quot; /Y &#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetName).dll&quot; &quot;D:\ProNa\Assets\Plugins\Editor\&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetName).pdb&quot; &quot;D:\ProNa\Assets\Plugins\Editor\&quot; /Y " />
+    <Exec Command="xcopy &quot;$(TargetDir)$(TargetName).dll&quot; &quot;D:\na\Assets\Plugins\Editor\&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetName).pdb&quot; &quot;D:\na\Assets\Plugins\Editor\&quot; /Y &#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetName).dll&quot; &quot;D:\pro_yangjie\Assets\Plugins\Editor\&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetName).pdb&quot; &quot;D:\pro_yangjie\Assets\Plugins\Editor\&quot; /Y " />
   </Target>
   
 

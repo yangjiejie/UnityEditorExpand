@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
@@ -128,12 +129,18 @@ public class SceneViewUI
         {
             EditorPrefs.DeleteAll();
             PlayerPrefs.DeleteAll();
-            string path = Application.persistentDataPath + "/GamebalootRankMatchResult.txt";
-            if (File.Exists(path))
+            
+           
+           
+            var allFiles = System.IO.Directory.GetFiles(Application.persistentDataPath)
+                .Where((f) => !f.Contains("CacheDatabase.db"));
+            foreach (var file in allFiles)
             {
-                Debug.Log("清理GamebalootRankMatchResult成功");
-                File.Delete(path);
+                File.Delete(file);
             }
+            Directory.Delete(Application.temporaryCachePath, true);
+
+            Debug.Log($"清理unity沙盒路径：可持久化目录和临时目录{Application.persistentDataPath}-{Application.temporaryCachePath}成功");
         }
 
         Handles.EndGUI();
