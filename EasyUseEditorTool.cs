@@ -16,6 +16,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine.U2D;
 using UnityEditor.U2D;
 using Spine.Unity;
+using UnityEditor.Build;
 
 
 
@@ -51,6 +52,61 @@ public static class EasyUseEditorTool  // 简称euetool
 
 
     }
+
+    [MenuItem("GameObject/右键菜单/节点标准化", priority = -4)]
+    static void HierarchyStandarded()
+    {
+        var mapReplace = new Dictionary<string, string>
+            {
+                { "图层","layer"},
+                {"组","group" },
+                { "拷贝","copy"},
+                { "色相","color"},
+                { "颜色","color"},
+                { "文本","text"},
+                { "字号","fontSize"},
+                { "水果机","fruitGame"},
+                { "游戏","game"},
+                { "矩形","rect"},
+                { "排行奖励","rankAward"},
+                 { "饱和度","saturation"},
+            };
+
+        var current = PrefabStageUtility.GetCurrentPrefabStage();
+        if (current == null) Debug.LogError("请在预设编辑模式进行");
+        var go = current.prefabContentsRoot;
+
+        var pattern = @"[\u4e00-\u9fff]"; // 匹配中文
+        var patternReg = new Regex(pattern);
+        HashSet<string> unknown = new HashSet<string>();
+        var all = go.GetComponentsInChildren<Transform>(true).ToList();
+        foreach(var sub in all)
+        {
+            foreach (Match m in Regex.Matches(sub.name, pattern))
+            {
+                string ch = m.Value;
+                if (!mapReplace.ContainsKey(ch))
+                    unknown.Add(ch);
+            }
+        }
+        int id = 0; 
+        foreach (var sub in all)
+        {
+            string newName = mapReplace.Keys.Aggregate(sub.name, (current, key) => current.Replace(key, mapReplace[key]));
+            if(patternReg.IsMatch(newName))
+            {
+                id++;
+                newName = Regex.Replace(newName, pattern, id.ToString());                
+            }
+            
+            if(newName != sub.name)
+            {
+                sub.name  = newName;
+            }            
+        }
+        EditorUtility.SetDirty(go);
+    }
+
 
     [MenuItem("GameObject/右键菜单/ui收集 _F3", priority = -3)]
     static void UICollect()
@@ -796,6 +852,125 @@ public static class EasyUseEditorTool  // 简称euetool
             Debug.Log(AssetDatabase.GetAssetPath(item) + " -- " + EasyUseEditorFuns.GetNodePath((item as Component).gameObject) );
         }
     }
+
+    [MenuItem("Assets/右键工具/设置纹理压缩格式", false, 1)]
+    public static void BatSetTextureFormat()
+    {
+        string[] selectedGuids = Selection.assetGUIDs;
+
+        // 收集所有需要处理的贴图路径
+        var allTexturePaths = selectedGuids
+            .SelectMany(guid =>
+            {
+                string assetPath = AssetDatabase.GUIDToAssetPath(guid);
+
+                if (AssetDatabase.IsValidFolder(assetPath))
+                {
+                    // 查找该文件夹下所有 Texture2D
+                    string[] textureGuids = AssetDatabase.FindAssets("t:Texture2D", new[] { assetPath });
+                    return textureGuids.Select(AssetDatabase.GUIDToAssetPath);
+                }
+                else
+                {
+                    var type = AssetDatabase.GetMainAssetTypeAtPath(assetPath);
+                    if (type == typeof(Texture2D))
+                    {
+                        return new[] { assetPath };
+                    }
+                }
+                return new string[0];
+            })
+            .Distinct() // 去重，防止重复处理
+            .ToList();
+
+        if (allTexturePaths.Count == 0)
+        {
+            Debug.Log("没有找到需要处理的纹理。");
+            return;
+        }
+
+        AssetDatabase.StartAssetEditing();
+        try
+        {
+            for (int i = 0; i < allTexturePaths.Count; i++)
+            {
+                string path = allTexturePaths[i];
+                EditorUtility.DisplayProgressBar("设置纹理压缩格式",
+                    $"正在处理 {i + 1}/{allTexturePaths.Count}: {path}",
+                    (float)(i + 1) / allTexturePaths.Count);
+
+                SetTextureFormat(path);
+            }
+        }
+        finally
+        {
+            AssetDatabase.StopAssetEditing();
+            AssetDatabase.Refresh();
+            EditorUtility.ClearProgressBar();
+        }
+
+        Debug.Log($"批量处理完成，共处理 {allTexturePaths.Count} 张纹理。");
+    }
+
+    private static bool SetTextureFormat(string assetPath)
+    {
+
+        assetPath = assetPath.ToUnityPath();
+        AssetImporter assetImporter = AssetImporter.GetAtPath(assetPath);
+        if (Application.isPlaying) return false;
+        if (!assetPath.EndsWith(".png") && !assetPath.EndsWith(".jpg"))
+        {
+            return false;
+        }
+
+
+        if (!assetPath.StartsWith("Assets/Art"))
+        {
+            return false;
+        }
+
+
+
+
+        bool needImport = false;
+        TextureImporter textureImporter = (TextureImporter)assetImporter;
+
+
+
+        //有一个问题就是textureImporter的纹理类型 可能做ui的话多数会是gui 但是不能排除其他的 这里不方便直接指定
+
+        if (textureImporter.isReadable)
+        {
+            Debug.LogError("警告!isReadable == true,已自动修正" + assetPath);
+            textureImporter.isReadable = false;
+            needImport = true;
+        }
+
+
+        var androidSetting = textureImporter.GetPlatformTextureSettings("android");
+        if (!androidSetting.overridden)
+        {
+            androidSetting.overridden = true;
+            needImport = true;
+        }
+
+
+
+        if (androidSetting.format != TextureImporterFormat.ASTC_8x8)
+        {
+            androidSetting.format = TextureImporterFormat.ASTC_8x8;
+            androidSetting.overridden = true;
+            needImport = true;
+        }
+        if (needImport)
+        {
+            textureImporter.SetPlatformTextureSettings(androidSetting);
+            EditorUtility.SetDirty(textureImporter); // 标记资源已修改
+            return true;
+        }
+        return false;
+    }
+
 
     [MenuItem("Assets/右键工具/获取场景中所有相机的路径", false, 1)]
     public static void GetCameraPathInScene()

@@ -553,9 +553,21 @@ public static class EasyUseEditorFuns
         if(isShowLog)
             EditorLogWindow.WriteLog(filePath.Replace(".path", ""));
     }
+    public static string ToFolderParent(this string s)
+    {
+        s = s.ToLinuxPath();
+        if (s.EndsWith("/"))
+        {
+            s = s.Remove(s.Length - 1);
+        }
+        if (s.LastIndexOf("/") > 0)
+        {
+            return s.Substring(0, s.LastIndexOf("/"));
+        }
+        return s;
+    }
 
-    
-    public static void CreateDir(string path)
+    public static void CreateDir(string path, bool createUnityDir = false)
     {
         if (File.Exists(path))
         {
@@ -570,8 +582,17 @@ public static class EasyUseEditorFuns
 
         while (!father.Exists)
         {
-            Directory.CreateDirectory(father.FullName);
-            father  = Directory.GetParent(father.FullName);
+            if (createUnityDir)
+            {
+
+                AssetDatabase.CreateFolder(father.FullName.ToFolderParent().ToUnityPath(), father.Name);
+                AssetDatabase.Refresh();
+            }
+            else
+            {
+                Directory.CreateDirectory(father.FullName);
+            }
+            father = Directory.GetParent(father.FullName);
         }
     }
     public static GameObject GetSelectObject()
