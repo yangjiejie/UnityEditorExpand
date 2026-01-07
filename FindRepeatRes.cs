@@ -866,7 +866,7 @@ public class FindRepeatRes : EditorWindow
         {
             
             EditorUtility.DisplayProgressBar(string.Format("Processing{0}/{1}", index, allTextures.Count), "", 1.0f* index / allTextures.Count);
-            if (!Regex.Match(assetPath,@"/image/").Success)
+            if (!assetPath.ToLower().Contains("/image/"))
             {
                 index++;
                 continue;
@@ -1192,11 +1192,14 @@ public class FindRepeatRes : EditorWindow
                 if (!likeSpriteResDepandence.ContainsKey(subRes.resPath))
                 {
                     //如果没有匹配路径image和匹配到了global(有动态加载的部分) 直接pass
-                    if(!Regex.IsMatch(subRes.resPath,@"/image/") || Regex.IsMatch(subRes.resPath, @"/global/"))
+                    
+
+                    if (!subRes.resPath.ToLower().Contains("/image/") || subRes.resPath.ToLower().Contains("/global/"))
                     {
                         continue;
                     }
-                    
+
+
                     likeSpriteResDepandence.Add(subRes.resPath, new List<MainResInfo>());
                 }
                 likeSpriteResDepandence[subRes.resPath].Add(mainRes);

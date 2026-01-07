@@ -53,59 +53,7 @@ public static class EasyUseEditorTool  // 简称euetool
 
     }
 
-    [MenuItem("GameObject/右键菜单/节点标准化", priority = -4)]
-    static void HierarchyStandarded()
-    {
-        var mapReplace = new Dictionary<string, string>
-            {
-                { "图层","layer"},
-                {"组","group" },
-                { "拷贝","copy"},
-                { "色相","color"},
-                { "颜色","color"},
-                { "文本","text"},
-                { "字号","fontSize"},
-                { "水果机","fruitGame"},
-                { "游戏","game"},
-                { "矩形","rect"},
-                { "排行奖励","rankAward"},
-                 { "饱和度","saturation"},
-            };
-
-        var current = PrefabStageUtility.GetCurrentPrefabStage();
-        if (current == null) Debug.LogError("请在预设编辑模式进行");
-        var go = current.prefabContentsRoot;
-
-        var pattern = @"[\u4e00-\u9fff]"; // 匹配中文
-        var patternReg = new Regex(pattern);
-        HashSet<string> unknown = new HashSet<string>();
-        var all = go.GetComponentsInChildren<Transform>(true).ToList();
-        foreach(var sub in all)
-        {
-            foreach (Match m in Regex.Matches(sub.name, pattern))
-            {
-                string ch = m.Value;
-                if (!mapReplace.ContainsKey(ch))
-                    unknown.Add(ch);
-            }
-        }
-        int id = 0; 
-        foreach (var sub in all)
-        {
-            string newName = mapReplace.Keys.Aggregate(sub.name, (current, key) => current.Replace(key, mapReplace[key]));
-            if(patternReg.IsMatch(newName))
-            {
-                id++;
-                newName = Regex.Replace(newName, pattern, id.ToString());                
-            }
-            
-            if(newName != sub.name)
-            {
-                sub.name  = newName;
-            }            
-        }
-        EditorUtility.SetDirty(go);
-    }
+    
 
 
     [MenuItem("GameObject/右键菜单/ui收集 _F3", priority = -3)]
