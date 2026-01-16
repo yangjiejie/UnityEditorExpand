@@ -902,14 +902,16 @@ public class FindRepeatRes : EditorWindow
         }
         EditorUtility.ClearProgressBar();
 
+        //由于spine我们项目里面没有动态加载都是随预设依赖去打包 所以可以全工程都处理 如果你的项目有动态加载SkeletonDataAsset资源
+        // 需要设置过滤 
         var allSpineRes = AssetDatabase.FindAssets("t:SkeletonDataAsset", paths.ToArray()).Select
-            ((xx) => AssetDatabase.GUIDToAssetPath(xx)).Where((x) => !x.Contains("/global/") && !x.Contains("/gameCommon/")).ToList<string>();
+            ((xx) => AssetDatabase.GUIDToAssetPath(xx)).ToList<string>();
         index = 0;
         foreach (string assetPath in allSpineRes)
         {
 
             EditorUtility.DisplayProgressBar(string.Format("Processing find UnUsed Spine{0}/{1}", index, allSpineRes.Count), "", 1.0f * index / allSpineRes.Count);
-            if (!assetPath.ToLower().Contains("/spine/"))
+            if (!assetPath.ToLower().Contains("/spine/"))// 我们的spine资源都必须在spine文件夹下 
             {
                 index++;
                 continue;
