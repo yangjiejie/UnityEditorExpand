@@ -880,7 +880,7 @@ public class FindRepeatRes : EditorWindow
         List<string> unusedSpriteAssets = new List<string>();
         List<string> unusedSpineAssets = new List<string>();
         var allTextures =  AssetDatabase.FindAssets("t:Sprite", paths.ToArray()).Select
-            ((xx)=>AssetDatabase.GUIDToAssetPath(xx)).Where((x)=>!x.Contains("/global/")).ToList<string>();
+            ((xx)=>AssetDatabase.GUIDToAssetPath(xx)).Where((x)=>!x.Contains("/global/") && !x.Contains("/gameCommon/")).ToList<string>();
 
         int index = 0;
         foreach (string assetPath in allTextures)
@@ -903,7 +903,7 @@ public class FindRepeatRes : EditorWindow
         EditorUtility.ClearProgressBar();
 
         var allSpineRes = AssetDatabase.FindAssets("t:SkeletonDataAsset", paths.ToArray()).Select
-            ((xx) => AssetDatabase.GUIDToAssetPath(xx)).Where((x) => !x.Contains("/global/")).ToList<string>();
+            ((xx) => AssetDatabase.GUIDToAssetPath(xx)).Where((x) => !x.Contains("/global/") && !x.Contains("/gameCommon/")).ToList<string>();
         index = 0;
         foreach (string assetPath in allSpineRes)
         {
