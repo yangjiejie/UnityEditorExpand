@@ -26,12 +26,12 @@ public class EditorLogWindow : EditorWindow
             {
                 return;
             }
-            var realPath = str.Substring(index >=0 ? index : 0);
+            var realPath = str.ToFullPath();
             if(!File.Exists(realPath))
             {
                 return;
             }
-            FileInfo fileInfo = new FileInfo(System.Environment.CurrentDirectory +"/" +realPath);
+            FileInfo fileInfo = new FileInfo(realPath);
             float singleSize = fileInfo.Length / (1024.0f );
             totalResLength += singleSize;
             textList.Add(realPath + $"  size :{singleSize}kb");

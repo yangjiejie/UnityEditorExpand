@@ -294,10 +294,13 @@ public class FindRepeatRes : EditorWindow
         GUILayout.EndHorizontal();
 
         GUILayout.BeginVertical();
+        //获取选中的目录 selectFolderPaths 赋值 
         GetSelectArtFolders();
         var tmpGuids = AssetDatabase.FindAssets("t:prefab t:Material", selectFolderPaths.ToArray());
-        var tmpSubGuids = AssetDatabase.FindAssets("t:Sprite", selectFolderPaths.ToArray());
-        GUILayout.Label("检查的目录：主资源" + tmpGuids.Length + "子资源" + tmpSubGuids.Length, GUILayout.Width(340)); // 描述文本
+        var tmpSubGuids = AssetDatabase.FindAssets("t:Sprite", selectFolderPaths.ToArray()).ToList();
+        var tmpSpineSubGuids = AssetDatabase.FindAssets("t:SkeletonDataAsset", selectFolderPaths.ToArray()).ToList();
+        tmpSubGuids.AddRange(tmpSpineSubGuids);
+        GUILayout.Label("检查的目录：主资源" + tmpGuids.Length + "子资源" + tmpSubGuids.Count, GUILayout.Width(340)); // 描述文本
 
         GUILayout.BeginVertical();
         for (int i = 0; i < checkFolders.Count; i++)
@@ -856,16 +859,34 @@ public class FindRepeatRes : EditorWindow
 
     private static void ClearUnUsedTextures(List<string> paths)
     {
+        foreach (string path in allAssetPaths)
+        {
+            
+            // 这里不要递归 我们已经拿到了所有的预设 材质等主资源
+            // image和spine都被主资源依赖 
+            var dependencies = AssetDatabase.GetDependencies(path,true);
+
+
+            foreach(var dep in dependencies)
+            {
+                if(!dependenciesMap.ContainsKey(dep))
+                {
+                    dependenciesMap.Add(dep, new HashSet<string>());
+                }
+                dependenciesMap[dep].Add(path);
+            }
+        }
         // 获取所有资源
-        List<string> unusedAssets = new List<string>();
+        List<string> unusedSpriteAssets = new List<string>();
+        List<string> unusedSpineAssets = new List<string>();
         var allTextures =  AssetDatabase.FindAssets("t:Sprite", paths.ToArray()).Select
-            ((xx)=>AssetDatabase.GUIDToAssetPath(xx)).ToList<string>();
+            ((xx)=>AssetDatabase.GUIDToAssetPath(xx)).Where((x)=>!x.Contains("/global/")).ToList<string>();
 
         int index = 0;
         foreach (string assetPath in allTextures)
         {
             
-            EditorUtility.DisplayProgressBar(string.Format("Processing{0}/{1}", index, allTextures.Count), "", 1.0f* index / allTextures.Count);
+            EditorUtility.DisplayProgressBar(string.Format("Processing find UnUsed Sprite{0}/{1}", index, allTextures.Count), "", 1.0f* index / allTextures.Count);
             if (!assetPath.ToLower().Contains("/image/"))
             {
                 index++;
@@ -875,77 +896,88 @@ public class FindRepeatRes : EditorWindow
             // 检查资源是否被引用
             if (!IsAssetUsed(assetPath))
             {
-                unusedAssets.Add(assetPath);
+                unusedSpriteAssets.Add(assetPath);
             }
             index++;
         }
         EditorUtility.ClearProgressBar();
-        // 删除未使用的资源
-        if (unusedAssets.Count > 0)
-        {
-            foreach (string path in unusedAssets)
-            {
-                Debug.Log("Deleting unused asset: " + path);
 
+        var allSpineRes = AssetDatabase.FindAssets("t:SkeletonDataAsset", paths.ToArray()).Select
+            ((xx) => AssetDatabase.GUIDToAssetPath(xx)).Where((x) => !x.Contains("/global/")).ToList<string>();
+        index = 0;
+        foreach (string assetPath in allSpineRes)
+        {
+
+            EditorUtility.DisplayProgressBar(string.Format("Processing find UnUsed Spine{0}/{1}", index, allSpineRes.Count), "", 1.0f * index / allSpineRes.Count);
+            if (!assetPath.ToLower().Contains("/spine/"))
+            {
+                index++;
+                continue;
+            }
+
+            // 检查资源是否被引用
+            if (!IsAssetUsed(assetPath))
+            {
+                unusedSpineAssets.Add(assetPath);
+            }
+            index++;
+        }
+        EditorUtility.ClearProgressBar();
+        index = 0;
+        // 删除未使用的资源 spirte 
+        if (unusedSpriteAssets.Count > 0)
+        {         
+            foreach (string path in unusedSpriteAssets)
+            {
+                //比较费时间 
                 //var ss = Path.Combine(System.Environment.CurrentDirectory, path);
                 //var tt = Path.Combine(EasyUseEditorFuns.baseCustomTmpCache, path);
-                //EasyUseEditorFuns.UnitySaveCopyFile(ss, tt, true);
+                //EasyUseEditorFuns.UnitySaveCopyFile(ss, tt, true,true,true,true);
 
-
-                //var metaFilePath = Path.Combine(EasyUseEditorFuns.baseCustomTmpCache, path + ".path");
-                //// 用额外的txt文件记录该文件的路径 方便回退
-                //EasyUseEditorFuns.WriteFileToTargetPath(metaFilePath, path);
-
+                EditorUtility.DisplayProgressBar(string.Format("delete  UnUsed sprite{0}/{1}",
+                    index, unusedSpriteAssets.Count), "", 1.0f * index / unusedSpriteAssets.Count);
+                EditorLogWindow.WriteLog(path);
                 AssetDatabase.DeleteAsset(path);
+                index++;
             }
             AssetDatabase.Refresh();
-            Debug.Log("Deleted " + unusedAssets.Count + " unused assets.");
+            Debug.Log("Deleted " + unusedSpriteAssets.Count + " unused assets.");
         }
         else
         {
             Debug.Log("No unused assets found.");
         }
+        EditorUtility.ClearProgressBar();
+        index = 0;
+        // 删除未使用的资源 spirte 
+        if (unusedSpineAssets.Count > 0)
+        {
 
+            foreach (string path in unusedSpineAssets)
+            {
+                EditorUtility.DisplayProgressBar(string.Format("delete  UnUsed Spine{0}/{1}",
+                   index, unusedSpineAssets.Count), "", 1.0f * index / unusedSpineAssets.Count);
+                EasyUseEditorFuns.DeleteSpineAssets(path);
+                index++;
+            }
+            AssetDatabase.Refresh();
+            Debug.Log("Deleted " + unusedSpineAssets.Count + " unused assets.");
+        }
+        else
+        {
+            Debug.Log("No unused assets found.");
+        }
+        EditorUtility.ClearProgressBar();
     }
     public static List<string> allAssetPaths = new List<string>();
-    public static Dictionary<string, List<string>> dependenciesMap = new Dictionary<string, List<string>>();
-    private static bool IsAssetUsed(string assetPath)
+    public static Dictionary<string, HashSet<string>> dependenciesMap = new Dictionary<string, HashSet<string>>();
+    private static bool IsAssetUsed(string subRes)
     {
-
-        foreach(var item in dependenciesMap)
+        if(dependenciesMap.ContainsKey(subRes))
         {
-            var path = item.Key;
-            var tmpDenpendencies = item.Value;
-            if(tmpDenpendencies.Contains(assetPath))
-            {
-                return true;
-            }
+            return true;
         }
-        // 获取所有场景和预制件
-        foreach (string path in allAssetPaths)
-        {
-            // 加载资源
-           
-            var dependencies = AssetDatabase.GetDependencies(path);
-            if(!dependenciesMap.ContainsKey(path))
-            {
-                dependenciesMap.Add(path, new List<string>());
-            }
-
-           
-            foreach (var obj in dependencies)
-            {
-                if(obj != null && !dependenciesMap[path].Contains(obj))
-                {
-                    dependenciesMap[path].Add(obj);
-                }
-                if (obj != null && obj == assetPath)
-                {
-                    return true;
-                }
-            }
-        }
-
+       
         return false;
     }
     public static void ClearUnUsedTexturesImp(string assetPath, List<string> allMainRes)

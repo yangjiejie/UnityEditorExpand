@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using UnityEngine;
 namespace GuideReplace
 {
     public class AssetDatabaseExpand
@@ -26,15 +28,25 @@ namespace GuideReplace
         public static  Regex filterIngoreFolder = new Regex(@"([\\/])(~[^\\/]+|[^\\/]+~)([\\/]|$)",RegexOptions.Compiled);
 
         public static Action<string, float,string> progressAction;
-
-        public static string projectRootPath = "";
+        private static string _projectRootPath;
+        public static string projectRootPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_projectRootPath))
+                {
+                    _projectRootPath = Application.dataPath.Substring(0, Application.dataPath.IndexOf("Assets") - 1);
+                }
+                return _projectRootPath;
+            }
+        }
         public static void Init(string projectPath)
         {
             
             fileMapGuids.Clear();
             guidMapFiles.Clear();
 
-            projectRootPath = projectPath.Substring(0, projectPath.IndexOf("Assets") - 1);
+            
 
              var all = System.IO.Directory.GetFiles(projectPath, "*.*", System.IO.SearchOption.AllDirectories).Where((xx) => !xx.EndsWith(".meta") && !xx.EndsWith(".gitignore")).ToList();
 

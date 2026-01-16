@@ -265,16 +265,16 @@ public static class EasyUseEditorFuns
     /// <summary>
     /// 拷贝unity的文件从source到taget 并且也拷贝meta文件
     /// </summary>
-    /// <param name="source 绝对路径"></param>
-    /// <param name="target 绝对路径"></param>
+    /// <param name="source 绝对路径和相对路径都可以"></param>
+    /// <param name="target 绝对路径和相对路径都可以 "></param>
     /// <param name="withMetaFile 是否将meta文件一并move"></param>
 
     public static void UnitySaveMoveFile(string source, string target, bool withMetaFile = true,bool withPathMetaFile = false)
     {
         try
         {
-            source = GetLinuxPath(source);
-            target = GetLinuxPath(target);
+            source = source.ToFullPath();
+            target = target.ToFullPath();
             var sourceFolder = System.IO.Path.GetDirectoryName(source);
             var targetFolder = System.IO.Path.GetDirectoryName(target);
             sourceFolder = Path.GetFullPath(sourceFolder);
@@ -1114,30 +1114,39 @@ public static class EasyUseEditorFuns
         isInPrefabStage = false;
         return false;
     }
-
-    public static  void GetSpineDependency()
+    //获取spine的依赖资源 一般spine都会丢到同一个文件夹下 
+    public static  List<string> GetSpineDependency(string resPath,bool includeSelf = false)
     {
-        var resPath = AssetDatabase.GetAssetPath(Selection.activeObject);
+        if(string.IsNullOrEmpty(resPath))
+        {
+            resPath = AssetDatabase.GetAssetPath(Selection.activeObject);
+        }
+        
 
         var folderName = System.IO.Path.GetDirectoryName(resPath);
 
-        var dependency = AssetDatabase.GetDependencies(resPath).Where((xx) => xx != resPath && !xx.EndsWith(".cs") && !xx.EndsWith(".shader") && !xx.StartsWith("Assets/3rdParty/Spine")).ToList();
-        bool hasReferency = false;
-        foreach(var item in dependency)
+        var dependency = AssetDatabase.GetDependencies(resPath).Where((xx) => xx != resPath 
+        && xx.Contains(folderName) ).ToList();
+
+        if(includeSelf)
         {
-            if(!item.Contains(folderName))
-            {
-                hasReferency = true;
-                break;
-            }
-            
+            dependency.Add(resPath);
         }
-        StringBuilder sb = new StringBuilder();
-        dependency.ForEach((xx) => sb.AppendLine(xx));
-        Debug.Log("依赖：" + sb.ToString());
-        if(hasReferency)
+        //StringBuilder sb = new StringBuilder();
+        //dependency.ForEach((xx) => sb.AppendLine(xx));
+        //Debug.Log("依赖：" + sb.ToString());
+        return dependency;
+    }
+    public static void DeleteSpineAssets(string resPath)
+    {
+        var paths = GetSpineDependency(resPath, true);
+        foreach(var item in paths)
         {
-            Debug.Log("引用不为空");
+            EditorLogWindow.WriteLog(item);
+            AssetDatabase.DeleteAsset(item);
+            // 涉及到文件拷贝比较费时间 
+            //var targetPath = Path.Combine(baseCustomTmpCache, item).ToFullPath();
+            //EasyUseEditorFuns.UnitySaveMoveFile(item, targetPath, true, true);            
         }
     }
     /// <summary>
