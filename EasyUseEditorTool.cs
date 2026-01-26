@@ -34,6 +34,8 @@ public static class EasyUseEditorTool  // 简称euetool
 
     public static string hotFixAssemblyFolder = "Assets/hot_fix"; // 项目c#热更目录 
     public static string UIBaseClass = "UIPanelBase"; // ui的基础类 
+    private static readonly Regex _numberWithOptionalUnderscore = // 匹配数字 或者_数字   _?\d+
+      new Regex(@"^(.*?)_?\d+$", RegexOptions.Compiled);
 
     [MenuItem("GameObject/右键菜单/结点|预设存档", priority = -1)]
     static void SavePrefabNode()
@@ -698,6 +700,16 @@ public static class EasyUseEditorTool  // 简称euetool
         {
             codeNum = FindLineNumber(targetGenCsFile, varName);
             finalCSPath = targetGenCsFile;
+            //尝试匹配_数字 或者数字 
+            if (_numberWithOptionalUnderscore.IsMatch(varName))
+            {
+                Match match = _numberWithOptionalUnderscore.Match(varName);
+                varName = match.Groups[1].Value;
+                codeNum = FindLineNumber(targetGenCsFile, varName);
+                finalCSPath = targetGenCsFile;
+            }
+
+
         }
         if (codeNum < 0)
         {
