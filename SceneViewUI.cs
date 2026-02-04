@@ -129,11 +129,12 @@ public class SceneViewUI
         {
             EditorPrefs.DeleteAll();
             PlayerPrefs.DeleteAll();
-            
-           
-           
+
+
+
             var allFiles = System.IO.Directory.GetFiles(Application.persistentDataPath)
-                .Where((f) => !f.Contains("CacheDatabase.db"));
+                     .Where((f) => !f.Contains("CacheDatabase.db") && !f.Contains("gmfunc.json")
+                     && !f.Contains("LogFilter.json"));
             foreach (var file in allFiles)
             {
                 File.Delete(file);
