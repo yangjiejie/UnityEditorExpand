@@ -812,7 +812,16 @@ public static class EasyUseEditorTool  // 简称euetool
             Debug.Log(AssetDatabase.GetAssetPath(item) + " -- " + EasyUseEditorFuns.GetNodePath((item as Component).gameObject) );
         }
     }
-
+    [MenuItem("Tools/unity多开支持")] 
+    public static void UnityMultyOpen()
+    {
+        var batPath =  Application.dataPath + "/../unity_multy_open.bat";
+        batPath = batPath.ToLinuxPath();
+        Application.OpenURL(batPath);
+    }
+    /// <summary>
+    /// unity中点选使用，可以一次选多个文件夹 或者多个文件 
+    /// </summary>
     [MenuItem("Assets/右键工具/设置纹理压缩格式", false, 1)]
     public static void BatSetTextureFormat()
     {
@@ -872,7 +881,75 @@ public static class EasyUseEditorTool  // 简称euetool
         Debug.Log($"批量处理完成，共处理 {allTexturePaths.Count} 张纹理。");
     }
 
-    private static bool SetTextureFormat(string assetPath)
+
+    /// <summary>
+    /// 供打包流程调用 批量设置纹理压缩格式 因为打包的时候我们没办法指定选定的文件夹进行操作，只能预先配置路径，
+    /// 如果实在觉得没问题甚至可以配置整个资源根 
+    /// </summary>
+    /// <param name="targetPaths">需要处理的路径数组（支持文件夹和单个纹理混合）</param>
+    /// <returns>处理成功的纹理数量</returns>
+    public static int BatchSetTextureFormat(string[] targetPaths)
+    {
+        if (targetPaths == null || targetPaths.Length == 0)
+        {
+            Debug.LogWarning("TextureBatchProcessor: 传入的处理路径为空");
+            return 0;
+        }
+
+        // 完全效仿原写法，用Linq流式收集，最后自动去重
+        var allTexturePaths = targetPaths
+            .SelectMany(assetPath =>
+            {
+                if (AssetDatabase.IsValidFolder(assetPath))
+                {
+                    // 查找该文件夹下所有 Texture2D
+                    string[] textureGuids = AssetDatabase.FindAssets("t:Texture2D", new[] { assetPath });
+                    return textureGuids.Select(AssetDatabase.GUIDToAssetPath);
+                }
+                else
+                {
+                    var type = AssetDatabase.GetMainAssetTypeAtPath(assetPath);
+                    if (type == typeof(Texture2D))
+                    {
+                        return new[] { assetPath };
+                    }
+                }
+                return Enumerable.Empty<string>();
+            })
+            .Distinct()
+            .ToList();
+
+        if (allTexturePaths.Count == 0)
+        {
+            Debug.Log("TextureBatchProcessor: 没有找到需要处理的纹理");
+            return 0;
+        }
+
+        Debug.Log($"TextureBatchProcessor: 开始批量处理 {allTexturePaths.Count} 张纹理");
+
+        AssetDatabase.StartAssetEditing();
+        try
+        {
+            for (int i = 0; i < allTexturePaths.Count; i++)
+            {
+                string path = allTexturePaths[i];
+                if (i % 10 == 0)
+                    Debug.Log($"TextureBatchProcessor: 进度 {i + 1}/{allTexturePaths.Count} - {path}");
+
+                SetTextureFormat(path);
+            }
+        }
+        finally
+        {
+            AssetDatabase.StopAssetEditing();
+            AssetDatabase.Refresh();
+        }
+
+        Debug.Log($"TextureBatchProcessor: 批量处理完成，共处理 {allTexturePaths.Count} 张纹理");
+        return allTexturePaths.Count;
+    }
+
+    public static bool SetTextureFormat(string assetPath)
     {
 
         assetPath = assetPath.ToUnityPath();
@@ -922,10 +999,31 @@ public static class EasyUseEditorTool  // 简称euetool
             androidSetting.overridden = true;
             needImport = true;
         }
+        var iosSetting = textureImporter.GetPlatformTextureSettings("ios");
+        if (!iosSetting.overridden)
+        {
+            iosSetting.overridden = true;
+            needImport = true;
+        }
+
+
+
+        if (iosSetting.format != TextureImporterFormat.ASTC_8x8)
+        {
+            iosSetting.format = TextureImporterFormat.ASTC_8x8;
+            iosSetting.overridden = true;
+            needImport = true;
+        }
+
         if (needImport)
         {
             textureImporter.SetPlatformTextureSettings(androidSetting);
-            EditorUtility.SetDirty(textureImporter); // 标记资源已修改
+            if(iosSetting != null)
+            {
+                textureImporter.SetPlatformTextureSettings(iosSetting);
+            }
+            textureImporter.SaveAndReimport();
+            
             return true;
         }
         return false;

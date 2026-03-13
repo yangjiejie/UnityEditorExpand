@@ -49,3 +49,4 @@ D:\studycode\UnityEditorExpand\bin\Debug\netstandard2.1\UnityEngine.CoreModule.d
 D:\studycode\UnityEditorExpand\bin\Debug\netstandard2.1\UnityEngine.IMGUIModule.dll
 D:\studycode\UnityEditorExpand\bin\Debug\netstandard2.1\UnityEngine.UI.dll
 D:\studycode\UnityEditorExpand\obj\Debug\netstandard2.1\UnityEdi.829D0B21.Up2Date
+D:\studycode\UnityEditorExpand\bin\Debug\netstandard2.1\UnityEngine.ImageConversionModule.dll

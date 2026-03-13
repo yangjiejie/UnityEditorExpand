@@ -14,6 +14,8 @@ public class RectTransformInspector : Editor
     private bool showScaler = false;
     private bool showDetail = false;
     private static readonly string kInitialSizeKey = "RectScaler_InitialSize_";
+    private Vector2 uiPos;
+    private Vector2 offSet;
 
     private void OnEnable()
     {
@@ -66,6 +68,14 @@ public class RectTransformInspector : Editor
             {
                 ResetInitialSizeCache();
             }
+            if(GUILayout.Button("记录ui坐标"))
+            {
+                uiPos = (target as RectTransform).anchoredPosition;
+            }
+            if(GUILayout.Button("停止记录坐标"))
+            {
+                offSet = (target as RectTransform).anchoredPosition - uiPos;
+            }
             showDetail = EditorGUILayout.Foldout(showDetail, "详细面板");
             if(showDetail)
             {
@@ -76,6 +86,19 @@ public class RectTransformInspector : Editor
                     EditorGUIUtility.systemCopyBuffer = (target as RectTransform).anchoredPosition.ToString();
                 }
                 EditorGUILayout.EndHorizontal();
+
+                if(offSet != default(Vector2))
+                {
+                    EditorGUILayout.BeginHorizontal();
+
+                    EditorGUILayout.Vector2Field("偏移坐标", offSet);
+                    if (GUILayout.Button("copy"))
+                    {
+                        EditorGUIUtility.systemCopyBuffer = offSet.ToString();
+                    }
+                    EditorGUILayout.EndHorizontal();
+                }
+                
             }
         }
         
