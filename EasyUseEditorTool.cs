@@ -868,7 +868,7 @@ public static class EasyUseEditorTool  // 简称euetool
                     $"正在处理 {i + 1}/{allTexturePaths.Count}: {path}",
                     (float)(i + 1) / allTexturePaths.Count);
 
-                SetTextureFormat(path);
+                SetTextureFormat(path,TextureImporterFormat.ASTC_8x8);
             }
         }
         finally
@@ -949,7 +949,7 @@ public static class EasyUseEditorTool  // 简称euetool
         return allTexturePaths.Count;
     }
 
-    public static bool SetTextureFormat(string assetPath)
+    public static bool SetTextureFormat(string assetPath,TextureImporterFormat defaultFormat=  TextureImporterFormat.ASTC_8x8)
     {
 
         assetPath = assetPath.ToUnityPath();
@@ -993,9 +993,9 @@ public static class EasyUseEditorTool  // 简称euetool
 
 
 
-        if (androidSetting.format != TextureImporterFormat.ASTC_8x8)
+        if (androidSetting.format != defaultFormat)
         {
-            androidSetting.format = TextureImporterFormat.ASTC_8x8;
+            androidSetting.format = defaultFormat;
             androidSetting.overridden = true;
             needImport = true;
         }
@@ -1008,9 +1008,9 @@ public static class EasyUseEditorTool  // 简称euetool
 
 
 
-        if (iosSetting.format != TextureImporterFormat.ASTC_8x8)
+        if (iosSetting.format != defaultFormat)
         {
-            iosSetting.format = TextureImporterFormat.ASTC_8x8;
+            iosSetting.format = defaultFormat;
             iosSetting.overridden = true;
             needImport = true;
         }
@@ -1220,48 +1220,8 @@ public static class EasyUseEditorTool  // 简称euetool
         AssetDatabase.Refresh();
         AssetDatabase.SaveAssets();
     }
-    [MenuItem("Assets/资源安全回收测试", false, -10000)]
-    static private void TestSafeDeleteGameRes()
-    {
-        var selectedGUIDs = Selection.assetGUIDs;
-        foreach (var guid in selectedGUIDs)
-        {
-            string assetPath = AssetDatabase.GUIDToAssetPath(guid);
-            string fullPath = Path.Combine(Application.dataPath.Replace("Assets", ""), assetPath);
+    
 
-            if (Directory.Exists(fullPath))
-            {
-                // 文件夹：遍历所有文件
-                string[] allFiles = Directory.GetFiles(fullPath, "*.*", SearchOption.AllDirectories);
-                foreach (string file in allFiles)
-                {
-                    if (file.EndsWith(".meta")) continue;
-                    TestXXXX(file);
-                }
-            }
-            else if (File.Exists(fullPath))
-            {
-                // 单个文件
-                TestXXXX(fullPath);
-            }
-            else
-            {
-                Debug.LogWarning($"路径不存在：{assetPath}");
-            }
-        }
-
-        AssetDatabase.Refresh();
-        AssetDatabase.SaveAssets();
-    }
-    static public void TestXXXX(string path)
-    {
-        var xx = EasyUseEditorFuns.GetSpineDependency(path);
-        
-        foreach(var item in xx)
-        {
-            Debug.Log(item);
-        }
-    }
 
     static public void MoveFileToSvn(string file)
     {

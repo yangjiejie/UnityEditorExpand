@@ -341,14 +341,27 @@ public class FindRepeatRes : EditorWindow
             SafeDeleteUnityResHook.forbidHook = false;
         }
         GUILayout.Space(10);
-        if (GUILayout.Button("3回滚清理的资源", GUILayout.Height(50)))
+        GUILayout.BeginHorizontal();
         {
-            SafeDeleteUnityResHook.forbidHook = true;
-            EditorLogWindow.ClearLog();
-            ReverseLocalSvn();
-            SafeDeleteUnityResHook.forbidHook = false;
+            if (GUILayout.Button("3回滚清理的资源", GUILayout.Height(50)))
+            {
+                SafeDeleteUnityResHook.forbidHook = true;
+                EditorLogWindow.ClearLog();
+                ReverseLocalSvn();
+                SafeDeleteUnityResHook.forbidHook = false;
 
+            }
+            if (GUILayout.Button("3回滚清理的资源（部分）", GUILayout.Height(50)))
+            {
+                SafeDeleteUnityResHook.forbidHook = true;
+                EditorLogWindow.ClearLog();
+                ReverseLocalSvn(false);
+                SafeDeleteUnityResHook.forbidHook = false;
+
+            }
+            GUILayout.EndHorizontal();
         }
+        
         GUILayout.Space(10);
         if (GUILayout.Button("4打开日志", GUILayout.Height(50)))
         {
@@ -484,12 +497,25 @@ public class FindRepeatRes : EditorWindow
                 FindMissing.CleanMissingScriptsInProject(missingPrefab);
             }
             GUILayout.Space(10);
-            if (GUILayout.Button("3回滚清理的资源", GUILayout.Height(50)))
+            GUILayout.BeginHorizontal();
             {
-                EditorLogWindow.ClearLog();
-                ReverseLocalSvn();
+                if (GUILayout.Button("3回滚清理的资源", GUILayout.Height(50)))
+                {
+                    EditorLogWindow.ClearLog();
+                    ReverseLocalSvn();
 
+                }
+                if (GUILayout.Button("3回滚清理的资源(部分)", GUILayout.Height(50)))
+                {
+                    EditorLogWindow.ClearLog();
+                    ReverseLocalSvn(false);
+
+                }
+                GUILayout.EndHorizontal();
             }
+
+            
+            
 
         }
         else if(selectPanel == 2)
@@ -1030,10 +1056,18 @@ public class FindRepeatRes : EditorWindow
 
 
 
-    public static void ReverseLocalSvn()
+    public static void ReverseLocalSvn(bool isAll =  true)
     {
+        
+
         var root = System.Environment.CurrentDirectory + "./mySvn/" + EasyUseEditorFuns.baseVersion;
+        if(!isAll)
+        {
+            root = EditorUtility.OpenFolderPanel("选择文件夹", System.Environment.CurrentDirectory + "./mySvn", "");
+        }
+        
         var allFiles = Directory.GetFiles(root, "*.path", SearchOption.AllDirectories);
+
         foreach (var file in allFiles)
         {
             var reallyFilePath = file.Replace(".path", "");
@@ -1041,13 +1075,13 @@ public class FindRepeatRes : EditorWindow
             var targetFilePath = Path.Combine(System.Environment.CurrentDirectory, resPath);
             if (File.Exists(reallyFilePath))
             {
-                if(File.Exists(targetFilePath))
+                if (File.Exists(targetFilePath))
                 {
-                    if(File.Exists(targetFilePath))
+                    if (File.Exists(targetFilePath))
                     {
-                        File.Delete(targetFilePath );
+                        File.Delete(targetFilePath);
                     }
-                    if(File.Exists(targetFilePath + ".meta"))
+                    if (File.Exists(targetFilePath + ".meta"))
                     {
                         File.Delete(targetFilePath + ".meta");
                     }
