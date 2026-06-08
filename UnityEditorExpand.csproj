@@ -62,7 +62,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(TargetDir)$(TargetName).dll&quot; &quot;D:\pro_yangjie\Assets\Plugins\Editor\&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetName).pdb&quot; &quot;D:\pro_yangjie\Assets\Plugins\Editor\&quot; /Y " />
+    <Exec Command="xcopy &quot;$(TargetDir)$(TargetName).dll&quot; &quot;D:\balootPro\Assets\Plugins\Editor\&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetName).pdb&quot; &quot;D:\balootPro\Assets\Plugins\Editor\&quot; /Y " />
   </Target>
   
 

@@ -29,7 +29,7 @@ public class SelectionTools
         //目录不要这种操作
         if (string.IsNullOrEmpty(path) || System.IO.Directory.Exists(path))
             return;
-
+        
         // 获取资源所在的目录
         string folderPath = System.IO.Path.GetDirectoryName(path);
         var folder = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(folderPath);

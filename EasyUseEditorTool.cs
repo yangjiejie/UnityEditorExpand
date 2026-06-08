@@ -955,7 +955,7 @@ public static class EasyUseEditorTool  // 简称euetool
         assetPath = assetPath.ToUnityPath();
         AssetImporter assetImporter = AssetImporter.GetAtPath(assetPath);
         if (Application.isPlaying) return false;
-        if (!assetPath.EndsWith(".png") && !assetPath.EndsWith(".jpg"))
+        if (!assetPath.EndsWith(".png") && !assetPath.EndsWith(".jpg") && !assetPath.EndsWith(".tga"))
         {
             return false;
         }
@@ -1190,7 +1190,6 @@ public static class EasyUseEditorTool  // 简称euetool
     [MenuItem("Assets/资源安全回收", false, -10000)]
     static private void SafeDeleteGameRes()
     {
-        // 获取选中路径
         var selectedGUIDs = Selection.assetGUIDs;
         foreach (var guid in selectedGUIDs)
         {
@@ -1199,32 +1198,79 @@ public static class EasyUseEditorTool  // 简称euetool
 
             if (Directory.Exists(fullPath))
             {
+                // 文件夹：遍历所有文件
                 string[] allFiles = Directory.GetFiles(fullPath, "*.*", SearchOption.AllDirectories);
-
-               
                 foreach (string file in allFiles)
                 {
-                    if (file.EndsWith(".meta")) continue; // 跳过 .meta 文件
-
-                    var sourcePath = EasyUseEditorFuns.GetLinuxPath(file);
-                    var root = System.Environment.CurrentDirectory + "/mySvn/" + EasyUseEditorFuns.baseVersion;
-
-                    var targetPath = Path.Combine(root, sourcePath.ToUnityPath()).ToFullPath();
-
-                    EasyUseEditorFuns.UnitySaveMoveFile(sourcePath.ToFullPath(), targetPath, true, true);
-
+                    if (file.EndsWith(".meta")) continue;
+                    MoveFileToSvn(file);
                 }
+            }
+            else if (File.Exists(fullPath))
+            {
+                // 单个文件
+                MoveFileToSvn(fullPath);
             }
             else
             {
-                Debug.LogWarning($"不是文件夹：{assetPath}");
+                Debug.LogWarning($"路径不存在：{assetPath}");
             }
         }
+
         AssetDatabase.Refresh();
         AssetDatabase.SaveAssets();
-
     }
-   
+    [MenuItem("Assets/资源安全回收测试", false, -10000)]
+    static private void TestSafeDeleteGameRes()
+    {
+        var selectedGUIDs = Selection.assetGUIDs;
+        foreach (var guid in selectedGUIDs)
+        {
+            string assetPath = AssetDatabase.GUIDToAssetPath(guid);
+            string fullPath = Path.Combine(Application.dataPath.Replace("Assets", ""), assetPath);
+
+            if (Directory.Exists(fullPath))
+            {
+                // 文件夹：遍历所有文件
+                string[] allFiles = Directory.GetFiles(fullPath, "*.*", SearchOption.AllDirectories);
+                foreach (string file in allFiles)
+                {
+                    if (file.EndsWith(".meta")) continue;
+                    TestXXXX(file);
+                }
+            }
+            else if (File.Exists(fullPath))
+            {
+                // 单个文件
+                TestXXXX(fullPath);
+            }
+            else
+            {
+                Debug.LogWarning($"路径不存在：{assetPath}");
+            }
+        }
+
+        AssetDatabase.Refresh();
+        AssetDatabase.SaveAssets();
+    }
+    static public void TestXXXX(string path)
+    {
+        var xx = EasyUseEditorFuns.GetSpineDependency(path);
+        
+        foreach(var item in xx)
+        {
+            Debug.Log(item);
+        }
+    }
+
+    static public void MoveFileToSvn(string file)
+    {
+        if (file.EndsWith(".meta")) return;
+        var sourcePath = EasyUseEditorFuns.GetLinuxPath(file);
+        var root = System.Environment.CurrentDirectory + "/mySvn/" + EasyUseEditorFuns.baseVersion;
+        var targetPath = Path.Combine(root, sourcePath.ToUnityPath()).ToFullPath();
+        EasyUseEditorFuns.UnitySaveMoveFile(sourcePath.ToFullPath(), targetPath, true, true);
+    }
 
     [MenuItem("Assets/右键工具/选中物体被引用查找2", false, 0)]
     static private void FindRefByGUID()

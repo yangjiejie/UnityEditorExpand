@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("UnityEditorExpand")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4c4677d4ce7e858d334a29e1597532bb54a66b28")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f37e7f8b4ded02b1f7fc940c41d54930123f9d9e")]
 [assembly: System.Reflection.AssemblyProductAttribute("UnityEditorExpand")]
 [assembly: System.Reflection.AssemblyTitleAttribute("UnityEditorExpand")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

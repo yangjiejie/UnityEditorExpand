@@ -1121,9 +1121,9 @@ public static class EasyUseEditorFuns
         {
             resPath = AssetDatabase.GetAssetPath(Selection.activeObject);
         }
-        
+        resPath = resPath.ToUnityPath();
 
-        var folderName = System.IO.Path.GetDirectoryName(resPath);
+        var folderName = System.IO.Path.GetDirectoryName(resPath).ToLinuxPath();
 
         var dependency = AssetDatabase.GetDependencies(resPath).Where((xx) => xx != resPath 
         && xx.Contains(folderName) ).ToList();
@@ -1137,16 +1137,23 @@ public static class EasyUseEditorFuns
         //Debug.Log("依赖：" + sb.ToString());
         return dependency;
     }
-    public static void DeleteSpineAssets(string resPath)
+    public static void DeleteSpineAssets(string resPath,bool isMovetoSvn = false)
     {
         var paths = GetSpineDependency(resPath, true);
         foreach(var item in paths)
         {
             EditorLogWindow.WriteLog(item);
-            AssetDatabase.DeleteAsset(item);
-            // 涉及到文件拷贝比较费时间 
-            //var targetPath = Path.Combine(baseCustomTmpCache, item).ToFullPath();
-            //EasyUseEditorFuns.UnitySaveMoveFile(item, targetPath, true, true);            
+            if(!isMovetoSvn)
+            {
+                AssetDatabase.DeleteAsset(item);
+               
+            }
+            else
+            {
+                EasyUseEditorTool.MoveFileToSvn(item);
+            }
+           
+                    
         }
     }
     /// <summary>

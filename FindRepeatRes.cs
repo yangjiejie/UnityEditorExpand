@@ -939,7 +939,7 @@ public class FindRepeatRes : EditorWindow
                 EditorUtility.DisplayProgressBar(string.Format("delete  UnUsed sprite{0}/{1}",
                     index, unusedSpriteAssets.Count), "", 1.0f * index / unusedSpriteAssets.Count);
                 EditorLogWindow.WriteLog(path);
-                AssetDatabase.DeleteAsset(path);
+                EasyUseEditorTool.MoveFileToSvn(path);// 改为移动到外部mysvn目录 
                 index++;
             }
             AssetDatabase.Refresh();
@@ -959,7 +959,7 @@ public class FindRepeatRes : EditorWindow
             {
                 EditorUtility.DisplayProgressBar(string.Format("delete  UnUsed Spine{0}/{1}",
                    index, unusedSpineAssets.Count), "", 1.0f * index / unusedSpineAssets.Count);
-                EasyUseEditorFuns.DeleteSpineAssets(path);
+                EasyUseEditorFuns.DeleteSpineAssets(path,true);
                 index++;
             }
             AssetDatabase.Refresh();

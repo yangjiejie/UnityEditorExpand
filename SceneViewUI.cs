@@ -127,19 +127,25 @@ public class SceneViewUI
         rect = new Rect(rect.x, rect.y - 20, 200, 20);
         if (GUI.Button(rect, "清理缓存"))
         {
-            EditorPrefs.DeleteAll();
-            PlayerPrefs.DeleteAll();
-
-
+           
 
             var allFiles = System.IO.Directory.GetFiles(Application.persistentDataPath)
                      .Where((f) => !f.Contains("CacheDatabase.db") && !f.Contains("gmfunc.json")
-                     && !f.Contains("LogFilter.json"));
+                     && !f.Contains("LogFilter.json") && !f.Contains("PCTest.json"));
             foreach (var file in allFiles)
             {
                 File.Delete(file);
             }
-            Directory.Delete(Application.temporaryCachePath, true);
+
+            var allFiles2 = System.IO.Directory.GetFiles(Application.temporaryCachePath)
+                    .Where((f) => !f.Contains("CacheDatabase.db") && !f.Contains("gmfunc.json")
+                    && !f.Contains("LogFilter.json") && !f.Contains("PCTest.json"));
+            foreach (var file in allFiles2)
+            {
+                File.Delete(file);
+            }
+
+            
 
             Debug.Log($"清理unity沙盒路径：可持久化目录和临时目录{Application.persistentDataPath}-{Application.temporaryCachePath}成功");
         }
